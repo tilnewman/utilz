@@ -24,9 +24,31 @@
 *.lai
 *.la
 *.a
+*.oa
 *.lib
 
 # Executables
 *.exe
 *.out
 *.app
+
+# Visual Studio
+*.ncb
+*.sln
+*.suo
+*.vap
+*.dbp
+*.ilk
+
+# Windows
+Thumbs.db
+
+# MacOS
+*.DS_Store
+
+# Common Directories
+**/build
+**/xcode
+**/Release
+**/Debug
+**/.vscode
