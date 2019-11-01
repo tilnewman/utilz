@@ -16,4 +16,3 @@ So you can use any of it by simply:
  * cmake add_subdiretory(utilz)
 
 -and everything just works.
-zTn
