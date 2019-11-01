@@ -4,6 +4,7 @@
 // math.hpp
 //
 #include <cmath>
+#include <iomanip>
 #include <iterator>
 #include <limits>
 #include <sstream>

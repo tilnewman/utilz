@@ -2,13 +2,17 @@ cmake_minimum_required(VERSION 3.15)
 project("utilz" VERSION 0.1 LANGUAGES CXX)
 
 
+# sfml
+find_package(SFML 2.5 COMPONENTS window graphics REQUIRED)
+
+
 # compiler specific stuff
-set(utilz_compiler_flags "")
-set(utilz_linker_flags "")
+set(compiler_flags "")
+set(linker_flags "")
 #
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 
-	set(utilz_compiler_flags
+	set(compiler_flags
         /std:c++17
         /permissive-
         /fp:fast
@@ -32,11 +36,9 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         /w14906
         /w14928)
 
-    set_property(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" PROPERTY VS_STARTUP_PROJECT ${MATH_TEST_NAME})
-
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
-	set(utilz_compiler_flags
+	set(compiler_flags
         -DNDEBUG
         -O3
         -std=c++17
@@ -58,7 +60,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
-	set(utilz_compiler_flags
+	set(compiler_flags
         -DNDEBUG
         -O3
         -std=c++17
@@ -87,30 +89,43 @@ endif()
 
 
 # print all custom flags
-message(${CMAKE_CXX_COMPILER_ID} " Custom Compile Flags: " ${utilz_compiler_flags})
-message(${CMAKE_CXX_COMPILER_ID} " Custom Link Flags   : " ${utilz_linker_flags})
+message(${CMAKE_CXX_COMPILER_ID} " Custom Compile Flags: " ${compiler_flags})
+message(${CMAKE_CXX_COMPILER_ID} " Custom Link Flags: " ${linker_flags})
 
 
 # find all utilz headers (utilz/*.hpp) and their corresponding test files (test/*.cpp)
 # WARNING: The use of cmake file globs may increase your risk of anal clenching, pretentious tirades, and hate crimes.
-file(GLOB utilz_header_files CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/utilz/*.?pp")
-file(GLOB utilz_test_files CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp")
+file(GLOB lib_files CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/utilz/*.?pp")
+file(GLOB catch_files CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/catch/*.?pp")
+file(GLOB test_files CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp")
 
 
-# setup the target and test for each utilz header
+# just a helper function to eliminate lots of duplicated code
+function(setup_target name)
+    target_link_options(${name} PUBLIC ${linker_flags})
+    target_link_libraries(${name} sfml-window sfml-graphics sfml-audio)
+    target_compile_options(${name} PUBLIC ${compiler_flags})
+    target_compile_features(${name} PUBLIC cxx_std_17)
+    target_include_directories(${name} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+    target_include_directories(${name} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/test")
+    target_include_directories(${name} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/catch")
+endfunction()
+
+
+# This library is not required, but it speeds up compile times significantly.
+# Compiling Catch2's header and main() takes 10-20 seconds -even all by itself without any testing code!
+# This is not a big deal with only one test.cpp, but with many it get ridiculous.
+# So this library allows Catch2 to be compiled only once for each test.
+add_library(catch_main OBJECT "${catch_files}")
+setup_target(catch_main)
+
+
+# make utilz tests
 include(CTest)
-foreach(utilz_test_file ${utilz_test_files})
-    
-    get_filename_component(utilz_test_name ${utilz_test_file} NAME_WE)
-
-    set(utilz_test_all_files "${utilz_test_file}" "${utilz_header_files}")
-    add_executable(${utilz_test_name} ${utilz_test_all_files})
-
-    target_compile_options(${utilz_test_name} PUBLIC ${utilz_compiler_flags})
-    target_compile_features(${utilz_test_name} PUBLIC cxx_std_17)
-    target_link_options(${utilz_test_name} PUBLIC ${utilz_linker_flags})
-    target_include_directories(${utilz_test_name} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-    target_include_directories(${utilz_test_name} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/test")
-    
-    add_test(NAME ${utilz_test_name} COMMAND ${utilz_test_name})
+foreach(test_file ${test_files})
+    get_filename_component(test_name ${test_file} NAME_WE)
+    set(test_all_files "${test_file}" "${lib_files}")
+    add_executable(${test_name} ${test_all_files} $<TARGET_OBJECTS:catch_main>)
+    setup_target(${test_name})
+    add_test(NAME ${test_name} COMMAND ${test_name})
 endforeach()
