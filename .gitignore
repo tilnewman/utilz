@@ -47,8 +47,22 @@ Thumbs.db
 *.DS_Store
 
 # Common Directories
-**/build
-**/xcode
-**/Release
-**/Debug
-**/.vscode
+build/
+.vscode/
+.vs/
+.xcode/
+Release/
+Debug/
+
+# CMake
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
