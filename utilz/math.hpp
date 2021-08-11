@@ -218,11 +218,11 @@ namespace utilz
                 std::ostringstream ss;
                 ss.imbue(std::locale("")); // this is only to put commas in the big numbers
 
-                ss << "x" << std::setw(numberWidth + (numberWidth / 2)) << std::left << count;
+                ss << "x" << count;
                 ss << " [" << std::setw(numberWidth) << std::right << min;
-                ss << ", " << std::setw(numberWidth) << std::right << avg;
+                ss << ", " << std::setw(numberWidth) << std::right << static_cast<T>(avg);
                 ss << ", " << std::setw(numberWidth) << std::right << max;
-                ss << "] (" << std::setw(numberWidth) << std::left << sdv << ")";
+                ss << "] sd" << std::setw(numberWidth) << std::left << sdv;
 
                 return ss.str();
             }

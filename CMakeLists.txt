@@ -3,7 +3,7 @@ project("utilz" VERSION 0.1 LANGUAGES CXX)
 
 
 # sfml
-find_package(SFML 2.5 COMPONENTS window graphics REQUIRED)
+find_package(SFML 2.5 COMPONENTS system window graphics REQUIRED)
 
 
 # compiler specific stuff
@@ -94,7 +94,7 @@ message(${CMAKE_CXX_COMPILER_ID} " Custom Link Flags: " ${linker_flags})
 
 
 # find all utilz headers (utilz/*.hpp) and their corresponding test files (test/*.cpp)
-# WARNING: The use of cmake file globs may increase your risk of anal clenching, pretentious tirades, and hate crimes.
+# WARNING: The use of cmake file globs have been shown to cause pretentious tirades, which can lead to hate crimes.
 file(GLOB lib_files CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/utilz/*.?pp")
 file(GLOB catch_files CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/catch/*.?pp")
 file(GLOB test_files CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp")
