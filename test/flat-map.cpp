@@ -223,6 +223,28 @@ TEST_CASE("compares", "[compares]")
     CHECK((map1 > map2) == false);
 }
 
+TEST_CASE("compares2", "[compares2]")
+{
+    FlatMap<int, int> map1;
+
+    map1.append(4, 0);
+    map1.append(1, 0);
+    map1.append(0, 0);
+    map1.append(2, 0);
+    map1.append(3, 0);
+
+    FlatMap<int, int> map2;
+
+    map2.append(0, 0);
+    map2.append(1, 0);
+    map2.append(2, 0);
+    map2.append(3, 0);
+    map2.append(4, 0);
+
+    // order does not matter for compares
+    REQUIRE(map1 == map2);
+}
+
 TEST_CASE("sortAndUnique", "[sortAndUnique]")
 {
     FlatMap<int, int> map1;
