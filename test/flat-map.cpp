@@ -181,3 +181,72 @@ TEST_CASE("erase", "[erase]")
 
     REQUIRE(map.size() == 500);
 }
+
+TEST_CASE("compares", "[compares]")
+{
+    FlatMap<int, std::string> map1;
+    FlatMap<int, std::string> map2;
+
+    CHECK(map1 == map2);
+    CHECK((map1 != map2) == false);
+    CHECK(map1 <= map2);
+    CHECK(map1 >= map2);
+    CHECK((map1 < map2) == false);
+    CHECK((map1 > map2) == false);
+
+    map1.reserve(100);
+
+    for (int i(0); i < 100; ++i)
+    {
+        map1.append(i, std::to_string(i));
+    }
+
+    CHECK((map1 == map2) == false);
+    CHECK(map1 != map2);
+    CHECK((map1 <= map2) == false);
+    CHECK(map1 >= map2);
+    CHECK((map1 < map2) == false);
+    CHECK(map1 > map2);
+
+    map2.reserve(100);
+
+    for (int i(0); i < 100; ++i)
+    {
+        map2.append(i, std::to_string(i));
+    }
+
+    CHECK(map1 == map2);
+    CHECK((map1 != map2) == false);
+    CHECK(map1 <= map2);
+    CHECK(map1 >= map2);
+    CHECK((map1 < map2) == false);
+    CHECK((map1 > map2) == false);
+}
+
+TEST_CASE("sortAndUnique", "[sortAndUnique]")
+{
+    FlatMap<int, int> map1;
+
+    map1.append(4, 0);
+    map1.append(3, 0);
+    map1.append(3, 0);
+    map1.append(4, 0);
+    map1.append(1, 0);
+    map1.append(0, 0);
+    map1.append(2, 0);
+    map1.append(4, 0);
+    map1.append(3, 0);
+
+    FlatMap<int, int> map2;
+
+    for (int i(0); i < 5; ++i)
+    {
+        map2.append(i, 0);
+    }
+
+    CHECK(map1 != map2);
+
+    map1.sortAndUnique();
+
+    CHECK(map1 == map2);
+}

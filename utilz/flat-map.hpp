@@ -11,6 +11,7 @@
 
 namespace utilz
 {
+
     // Replacement for std::map for those times when you wish it was just a vector.
     // Not sorted to favor speed, therefore linear run-time and duplicates are possible.
     template <typename key_t, typename data_t>
@@ -82,9 +83,11 @@ namespace utilz
             throw std::out_of_range("FlatMap::at()const - key not found");
         }
 
+        // duplicate keys maintained
         void append(const value_t & pair) { m_vector.push_back(pair); }
         void append(const key_t & key, const data_t & data) { m_vector.emplace_back(key, data); }
 
+        // will erase all duplicate keys
         void erase(const key_t & key)
         {
             m_vector.erase(
@@ -120,6 +123,21 @@ namespace utilz
 
         bool exists(const key_t & key) const { return (find(key) != std::end(m_vector)); }
 
+        // removes all duplicate keys
+        void sortAndUnique()
+        {
+            std::sort(std::begin(m_vector), std::end(m_vector));
+
+            m_vector.erase(
+                std::unique(
+                    std::begin(m_vector),
+                    std::end(m_vector),
+                    [](const value_t & left, const value_t & right) {
+                        return (left.first == right.first);
+                    }),
+                std::end(m_vector));
+        }
+
         constexpr iterator_t begin() noexcept { return std::begin(m_vector); }
         constexpr iterator_t end() noexcept { return std::end(m_vector); }
 
@@ -145,9 +163,76 @@ namespace utilz
         constexpr const_reverse_iterator_t crbegin() const noexcept { return rbegin(); }
         constexpr const_reverse_iterator_t crend() const noexcept { return rend(); }
 
+        // clang-format off
+        template<typename T, typename U>
+        friend bool
+            operator==(const FlatMap<T, U> & left, const FlatMap<T, U> & right);
+
+        template<typename T, typename U>
+        friend bool
+            operator<(const FlatMap<T, U> & left, const FlatMap<T, U> & right);
+        // clang-format on
+
       private:
         container_t m_vector;
     };
+
+    //
+
+    template <typename key_t, typename data_t>
+    bool operator==(const FlatMap<key_t, data_t> & left, const FlatMap<key_t, data_t> & right)
+    {
+        if (left.size() != right.size())
+        {
+            return false;
+        }
+
+        typename FlatMap<key_t, data_t>::container_t leftVec{ left.m_vector };
+        typename FlatMap<key_t, data_t>::container_t rightVec{ right.m_vector };
+
+        std::sort(std::begin(leftVec), std::end(leftVec));
+        std::sort(std::begin(leftVec), std::end(leftVec));
+
+        return (leftVec == rightVec);
+    }
+
+    template <typename key_t, typename data_t>
+    bool operator!=(const FlatMap<key_t, data_t> & left, const FlatMap<key_t, data_t> & right)
+    {
+        return !(left == right);
+    }
+
+    template <typename key_t, typename data_t>
+    bool operator<(const FlatMap<key_t, data_t> & left, const FlatMap<key_t, data_t> & right)
+    {
+        typename FlatMap<key_t, data_t>::container_t leftVec{ left.m_vector };
+        typename FlatMap<key_t, data_t>::container_t rightVec{ right.m_vector };
+
+        std::sort(std::begin(leftVec), std::end(leftVec));
+        std::sort(std::begin(leftVec), std::end(leftVec));
+
+        return (leftVec < rightVec);
+    }
+
+    template <typename key_t, typename data_t>
+    bool operator>(const FlatMap<key_t, data_t> & left, const FlatMap<key_t, data_t> & right)
+    {
+        return (right < left);
+    }
+
+    template <typename key_t, typename data_t>
+    bool operator<=(const FlatMap<key_t, data_t> & left, const FlatMap<key_t, data_t> & right)
+    {
+        return !(left > right);
+    }
+
+    template <typename key_t, typename data_t>
+    bool operator>=(const FlatMap<key_t, data_t> & left, const FlatMap<key_t, data_t> & right)
+    {
+        return !(left < right);
+    }
+
+    //
 
     template <typename key_t, typename data_t>
     constexpr auto begin(FlatMap<key_t, data_t> & map) noexcept
