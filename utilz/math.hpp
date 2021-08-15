@@ -101,7 +101,7 @@ namespace utilz
 
                 if (diffAbs < T(1))
                 {
-                    return !(diffAbs > (std::numeric_limits<T>::epsilon() * 10));
+                    return !(diffAbs > (std::numeric_limits<T>::epsilon() * 100));
                 }
                 else
                 {
