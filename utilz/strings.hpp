@@ -9,8 +9,15 @@
 namespace utilz
 {
 
-    constexpr bool isUpper(const char CH) noexcept { return !((CH < 'A') || (CH > 'Z')); }
-    constexpr bool isLower(const char CH) noexcept { return !((CH < 'a') || (CH > 'z')); }
+    constexpr bool isUpper(const char CH) noexcept
+    {
+        return ((CH >= 'A') && (CH <= 'Z') && (CH != '\127'));
+    }
+
+    constexpr bool isLower(const char CH) noexcept
+    {
+        return ((CH >= 'a') && (CH <= 'z') && (CH != '\127'));
+    }
 
     void toUpper(char & ch) noexcept
     {
@@ -74,23 +81,28 @@ namespace utilz
 
     constexpr bool isAlpha(const char CH) noexcept { return (isUpper(CH) || isLower(CH)); }
 
-    constexpr bool isDigit(const char CH) noexcept { return !((CH < '0') || (CH > '9')); }
+    constexpr bool isDigit(const char CH) noexcept { return ((CH >= '0') && (CH <= '9')); }
 
-    constexpr bool isAlphaOrDigit(const char CH) noexcept { return (isAlpha(CH) || isDigit(CH)); }
+    // technically ascii printable set excluding delete
+    constexpr bool isPrintable(const char CH) noexcept
+    {
+        return ((CH >= 32) && (CH <= 126) && (CH != '\127'));
+    }
 
     constexpr bool isWhitespace(const char CH) noexcept
     {
         return ((CH == ' ') || (CH == '\t') || (CH == '\r') || (CH == '\n'));
     }
 
-    constexpr bool isDisplayable(const char CH) noexcept
+    // includes typical whitespace and the printable ascii set excluding delete
+    constexpr bool isTypical(const char CH) noexcept
     {
-        return (((CH > 31) && (CH != 127)) || isWhitespace(CH));
+        return (isWhitespace(CH) || isPrintable(CH));
     }
 
-    constexpr bool isWhitespaceOrNonDisplayable(const char CH) noexcept
+    constexpr bool isWhitespaceOrNonTypical(const char CH) noexcept
     {
-        return ((CH < 33) || (CH == 127));
+        return (isWhitespace(CH) || !isTypical(CH));
     }
 
     // trims any char(s) for which the lambda returns false
@@ -113,28 +125,27 @@ namespace utilz
         return newStr;
     }
 
-    void trimNonDisplayable(std::string & str)
+    void trimNonTypical(std::string & str)
     {
-        trimIfNot(str, [](const char CH) { return isDisplayable(CH); });
+        trimIfNot(str, [](const char CH) { return isTypical(CH); });
     }
 
-    [[nodiscard]] const std::string trimNonDisplayableCopy(const std::string & STR_ORIG)
+    [[nodiscard]] const std::string trimNonTypicalCopy(const std::string & STR_ORIG)
     {
         std::string newStr{ STR_ORIG };
-        trimNonDisplayable(newStr);
+        trimNonTypical(newStr);
         return newStr;
     }
 
-    void trimWhitespaceAndNonDisplayable(std::string & str)
+    void trimWhitespaceAndNonTypical(std::string & str)
     {
-        trimIfNot(str, [](const char CH) { return !isWhitespaceOrNonDisplayable(CH); });
+        trimIfNot(str, [](const char CH) { return !isWhitespaceOrNonTypical(CH); });
     }
 
-    [[nodiscard]] const std::string
-        trimWhitespaceAndNonDisplayableCopy(const std::string & STR_ORIG)
+    [[nodiscard]] const std::string trimWhitespaceAndNonTypicalCopy(const std::string & STR_ORIG)
     {
         std::string newStr{ STR_ORIG };
-        trimWhitespaceAndNonDisplayable(newStr);
+        trimWhitespaceAndNonTypical(newStr);
         return newStr;
     }
 
