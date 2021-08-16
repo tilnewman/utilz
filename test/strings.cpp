@@ -110,3 +110,63 @@ TEST_CASE("trim", "[trim]")
 
     CHECK(trimWhitespaceAndNonTypicalCopy(" \f\r\n\t a a \r\t\n \f") == "a a");
 }
+
+TEST_CASE("startAndEndsWith", "[startAndEndsWith]")
+{
+    CHECK(startsWith("", "") == false);
+    CHECK(startsWith("a", "") == false);
+    CHECK(startsWith("", "a") == false);
+    CHECK(startsWith("a", "b") == false);
+    CHECK(startsWith("aaa", "b") == false);
+    CHECK(startsWith("aaa", "aaaa") == false);
+
+    CHECK(startsWith("a", "a"));
+    CHECK(startsWith("aa", "aa"));
+    CHECK(startsWith("aaa", "aaa"));
+    CHECK(startsWith("andNowForTesting", "a"));
+    CHECK(startsWith("andNowForTesting", "and"));
+    CHECK(startsWith("andNowForTesting", "n") == false);
+
+    CHECK(endsWith("", "") == false);
+    CHECK(endsWith("a", "") == false);
+    CHECK(endsWith("", "a") == false);
+    CHECK(endsWith("a", "b") == false);
+    CHECK(endsWith("aaa", "b") == false);
+    CHECK(endsWith("aaa", "aaaa") == false);
+
+    CHECK(endsWith("a", "a"));
+    CHECK(endsWith("aa", "aa"));
+    CHECK(endsWith("aaa", "aaa"));
+    CHECK(endsWith("andNowForTesting", "a") == false);
+    CHECK(endsWith("andNowForTesting", "and") == false);
+    CHECK(endsWith("andNowForTesting", "n") == false);
+
+    CHECK(endsWith("andNowForTesting", "g"));
+    CHECK(endsWith("andNowForTesting", "Testing"));
+}
+
+TEST_CASE("replaceAll", "[replaceAll]")
+{
+    CHECK(replaceAllCopy("", "", "") == "");
+    CHECK(replaceAllCopy("", "a", "") == "");
+    CHECK(replaceAllCopy("", "", "b") == "");
+    CHECK(replaceAllCopy("a", "a", "") == "");
+    CHECK(replaceAllCopy("a", "", "b") == "a");
+    CHECK(replaceAllCopy("aa", "a", "b") == "bb");
+    CHECK(replaceAllCopy("aa", "aa", "b") == "b");
+    CHECK(replaceAllCopy("This and that.", " ", "_") == "This_and_that.");
+    CHECK(replaceAllCopy("ftp: ftpftp: ftp:", "ftp", "http") == "http: httphttp: http:");
+}
+
+TEST_CASE("removeAll", "[removeAll]")
+{
+    CHECK(removeAllCopy("", "") == "");
+    CHECK(removeAllCopy("a", "") == "a");
+    CHECK(removeAllCopy("", "a") == "");
+    CHECK(removeAllCopy("a", "b") == "a");
+    CHECK(removeAllCopy("aaa", "bbb") == "aaa");
+    CHECK(removeAllCopy("a", "a") == "");
+    CHECK(removeAllCopy("aaa", "a") == "");
+    CHECK(removeAllCopy("ababab", "a") == "bbb");
+    CHECK(removeAllCopy("ababab", "b") == "aaa");
+}

@@ -149,6 +149,64 @@ namespace utilz
         return newStr;
     }
 
+    bool startsWith(const std::string & str, const std::string & with)
+    {
+        if (str.empty() || with.empty() || (with.size() > str.size()))
+        {
+            return false;
+        }
+
+        return (str.find(with) == 0);
+    }
+
+    bool endsWith(const std::string & str, const std::string & with)
+    {
+        if (str.empty() || with.empty() || (with.size() > str.size()))
+        {
+            return false;
+        }
+
+        return (str.rfind(with) == (str.size() - with.size()));
+    }
+
+    std::size_t replaceAll(std::string & inout, std::string_view what, std::string_view with)
+    {
+        if (inout.empty() || what.empty() || (what.size() > inout.size()))
+        {
+            return 0;
+        }
+
+        std::size_t count = 0;
+
+        for (std::string::size_type pos{};
+             inout.npos != (pos = inout.find(what.data(), pos, what.length()));
+             pos += with.length(), ++count)
+        {
+            inout.replace(pos, what.length(), with.data(), with.length());
+        }
+
+        return count;
+    }
+
+    std::string replaceAllCopy(std::string_view str, std::string_view what, std::string_view with)
+    {
+        std::string copy{ str };
+        replaceAll(copy, what, with);
+        return copy;
+    }
+
+    std::size_t removeAll(std::string & inout, std::string_view what)
+    {
+        return replaceAll(inout, what, "");
+    }
+
+    std::string removeAllCopy(std::string_view str, std::string_view what)
+    {
+        std::string copy{ str };
+        removeAll(copy, what);
+        return copy;
+    }
+
 } // namespace utilz
 
 #endif // UTILZ_STRINGS_HPP_INCLUDED
