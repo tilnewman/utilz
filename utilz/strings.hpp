@@ -9,17 +9,17 @@
 namespace utilz
 {
 
-    constexpr bool isUpper(const char CH) noexcept
+    constexpr static bool isUpper(const char CH) noexcept
     {
         return ((CH >= 'A') && (CH <= 'Z') && (CH != '\127'));
     }
 
-    constexpr bool isLower(const char CH) noexcept
+    constexpr static bool isLower(const char CH) noexcept
     {
         return ((CH >= 'a') && (CH <= 'z') && (CH != '\127'));
     }
 
-    void toUpper(char & ch) noexcept
+    void static toUpper(char & ch) noexcept
     {
         if (isLower(ch))
         {
@@ -27,14 +27,14 @@ namespace utilz
         }
     }
 
-    [[nodiscard]] char toUpperCopy(const char CH) noexcept
+    [[nodiscard]] static char toUpperCopy(const char CH) noexcept
     {
         auto copy{ CH };
         toUpper(copy);
         return copy;
     }
 
-    void toUpper(std::string & str)
+    static void toUpper(std::string & str)
     {
         for (char & ch : str)
         {
@@ -42,14 +42,14 @@ namespace utilz
         }
     }
 
-    [[nodiscard]] const std::string toUpperCopy(const std::string & STR)
+    [[nodiscard]] static std::string toUpperCopy(const std::string & STR)
     {
         auto copy{ STR };
         toUpper(copy);
         return copy;
     }
 
-    void toLower(char & ch) noexcept
+    static void toLower(char & ch) noexcept
     {
         if (isUpper(ch))
         {
@@ -57,14 +57,14 @@ namespace utilz
         }
     }
 
-    [[nodiscard]] char toLowerCopy(const char CH) noexcept
+    [[nodiscard]] static char toLowerCopy(const char CH) noexcept
     {
         auto copy{ CH };
         toLower(copy);
         return copy;
     }
 
-    void toLower(std::string & str)
+    static void toLower(std::string & str)
     {
         for (char & ch : str)
         {
@@ -72,35 +72,35 @@ namespace utilz
         }
     }
 
-    [[nodiscard]] const std::string toLowerCopy(const std::string & STR)
+    [[nodiscard]] static std::string toLowerCopy(const std::string & STR)
     {
         auto copy{ STR };
         toLower(copy);
         return copy;
     }
 
-    constexpr bool isAlpha(const char CH) noexcept { return (isUpper(CH) || isLower(CH)); }
+    constexpr static bool isAlpha(const char CH) noexcept { return (isUpper(CH) || isLower(CH)); }
 
-    constexpr bool isDigit(const char CH) noexcept { return ((CH >= '0') && (CH <= '9')); }
+    constexpr static bool isDigit(const char CH) noexcept { return ((CH >= '0') && (CH <= '9')); }
 
     // technically ascii printable set excluding delete
-    constexpr bool isPrintable(const char CH) noexcept
+    constexpr static bool isPrintable(const char CH) noexcept
     {
         return ((CH >= 32) && (CH <= 126) && (CH != '\127'));
     }
 
-    constexpr bool isWhitespace(const char CH) noexcept
+    constexpr static bool isWhitespace(const char CH) noexcept
     {
         return ((CH == ' ') || (CH == '\t') || (CH == '\r') || (CH == '\n'));
     }
 
     // includes typical whitespace and the printable ascii set excluding delete
-    constexpr bool isTypical(const char CH) noexcept
+    constexpr static bool isTypical(const char CH) noexcept
     {
         return (isWhitespace(CH) || isPrintable(CH));
     }
 
-    constexpr bool isWhitespaceOrNonTypical(const char CH) noexcept
+    constexpr static bool isWhitespaceOrNonTypical(const char CH) noexcept
     {
         return (isWhitespace(CH) || !isTypical(CH));
     }
@@ -113,43 +113,43 @@ namespace utilz
         str.erase(std::find_if(std::rbegin(str), std::rend(str), lambda).base(), std::end(str));
     }
 
-    void trimWhitespace(std::string & str)
+    void static trimWhitespace(std::string & str)
     {
         trimIfNot(str, [](const char CH) { return !isWhitespace(CH); });
     }
 
-    [[nodiscard]] const std::string trimWhitespaceCopy(const std::string & STR_ORIG)
+    [[nodiscard]] static std::string trimWhitespaceCopy(const std::string & STR_ORIG)
     {
         std::string newStr{ STR_ORIG };
         trimWhitespace(newStr);
         return newStr;
     }
 
-    void trimNonTypical(std::string & str)
+    static void trimNonTypical(std::string & str)
     {
         trimIfNot(str, [](const char CH) { return isTypical(CH); });
     }
 
-    [[nodiscard]] const std::string trimNonTypicalCopy(const std::string & STR_ORIG)
+    [[nodiscard]] static std::string trimNonTypicalCopy(const std::string & STR_ORIG)
     {
         std::string newStr{ STR_ORIG };
         trimNonTypical(newStr);
         return newStr;
     }
 
-    void trimWhitespaceAndNonTypical(std::string & str)
+    static void trimWhitespaceAndNonTypical(std::string & str)
     {
         trimIfNot(str, [](const char CH) { return !isWhitespaceOrNonTypical(CH); });
     }
 
-    [[nodiscard]] const std::string trimWhitespaceAndNonTypicalCopy(const std::string & STR_ORIG)
+    [[nodiscard]] static std::string trimWhitespaceAndNonTypicalCopy(const std::string & STR_ORIG)
     {
         std::string newStr{ STR_ORIG };
         trimWhitespaceAndNonTypical(newStr);
         return newStr;
     }
 
-    bool startsWith(const std::string & str, const std::string & with)
+    static bool startsWith(const std::string & str, const std::string & with)
     {
         if (str.empty() || with.empty() || (with.size() > str.size()))
         {
@@ -159,7 +159,7 @@ namespace utilz
         return (str.find(with) == 0);
     }
 
-    bool endsWith(const std::string & str, const std::string & with)
+    static bool endsWith(const std::string & str, const std::string & with)
     {
         if (str.empty() || with.empty() || (with.size() > str.size()))
         {
@@ -169,7 +169,7 @@ namespace utilz
         return (str.rfind(with) == (str.size() - with.size()));
     }
 
-    std::size_t replaceAll(std::string & inout, std::string_view what, std::string_view with)
+    static std::size_t replaceAll(std::string & inout, std::string_view what, std::string_view with)
     {
         if (inout.empty() || what.empty() || (what.size() > inout.size()))
         {
@@ -188,19 +188,20 @@ namespace utilz
         return count;
     }
 
-    std::string replaceAllCopy(std::string_view str, std::string_view what, std::string_view with)
+    [[nodiscard]] static std::string
+        replaceAllCopy(std::string_view str, std::string_view what, std::string_view with)
     {
         std::string copy{ str };
         replaceAll(copy, what, with);
         return copy;
     }
 
-    std::size_t removeAll(std::string & inout, std::string_view what)
+    static std::size_t removeAll(std::string & inout, std::string_view what)
     {
         return replaceAll(inout, what, "");
     }
 
-    std::string removeAllCopy(std::string_view str, std::string_view what)
+    [[nodiscard]] static std::string removeAllCopy(std::string_view str, std::string_view what)
     {
         std::string copy{ str };
         removeAll(copy, what);
